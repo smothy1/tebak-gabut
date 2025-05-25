@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Tebak-Tebakan</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #eef7ff;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .result {
+      font-size: 16px;
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tebak Berdasarkan Ciri-Ciri</h1>
+    <div class="question" id="question">Memuat soal...</div>
+    <input type="text" id="answer" placeholder="Tulis jawaban di sini...">
+    <button onclick="checkAnswer()">Cek Jawaban</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      // Dinosaurus (lebih dari 30 jenis)
+      { clue: "Dinosaurus pemakan tumbuhan dengan leher panjang, hidup di zaman Jurassic", answer: "Brachiosaurus" },
+      { clue: "Dinosaurus predator terkenal dengan gigi tajam, disebut Raja", answer: "Tyrannosaurus" },
+      { clue: "Dinosaurus bertanduk tiga", answer: "Triceratops" },
+      { clue: "Dinosaurus dengan punggung berduri dan ekor berduri", answer: "Stegosaurus" },
+      { clue: "Dinosaurus dengan paruh seperti bebek", answer: "Hadrosaurus" },
+      { clue: "Dinosaurus kecil dan cepat, hidup di akhir periode Trias", answer: "Coelophysis" },
+      { clue: "Dinosaurus dengan pelindung tubuh seperti zirah", answer: "Ankylosaurus" },
+      { clue: "Dinosaurus dengan tanduk besar di atas hidung dan frill besar", answer: "Pachyrhinosaurus" },
+      { clue: "Dinosaurus pemakan tumbuhan dengan ekor seperti cambuk", answer: "Diplodocus" },
+      { clue: "Dinosaurus dengan cakar besar di setiap tangan, hidup di Asia", answer: "Therizinosaurus" },
+      { clue: "Dinosaurus predator besar dari Afrika dengan layar di punggungnya", answer: "Spinosaurus" },
+      { clue: "Dinosaurus dengan kepala besar dan gigi tajam, hidup di Amerika Utara", answer: "Allosaurus" },
+      { clue: "Dinosaurus dengan leher sangat panjang, salah satu yang terbesar", answer: "Argentinosaurus" },
+      { clue: "Dinosaurus kecil dengan paruh dan ekor panjang, hidup di Asia", answer: "Oviraptor" },
+      { clue: "Dinosaurus dengan kepala seperti kubah, digunakan untuk bertarung", answer: "Pachycephalosaurus" },
+      { clue: "Dinosaurus dengan tanduk panjang di hidungnya", answer: "Ceratosaurus" },
+      { clue: "Dinosaurus dengan sayap dan bulu, mirip burung", answer: "Archaeopteryx" },
+      { clue: "Dinosaurus dengan ekor kaku dan tubuh kecil", answer: "Hypsilophodon" },
+      { clue: "Dinosaurus dengan kepala besar dan gigi tajam, hidup di Asia", answer: "Tarbosaurus" },
+      { clue: "Dinosaurus besar dari Amerika Selatan", answer: "Saltasaurus" },
+      { clue: "Dinosaurus dengan tanduk dan frill besar", answer: "Styracosaurus" },
+      { clue: "Dinosaurus dengan ekor seperti gada", answer: "Euoplocephalus" },
+
+      // Planet
+      { clue: "Planet terbesar di tata surya", answer: "Jupiter" },
+      { clue: "Planet terdekat dengan matahari", answer: "Merkurius" },
+      { clue: "Planet dengan cincin indah", answer: "Saturnus" },
+      { clue: "Planet merah yang diyakini pernah memiliki air", answer: "Mars" },
+      { clue: "Planet terpanas di tata surya", answer: "Venus" },
+      { clue: "Planet biru yang paling jauh dari matahari", answer: "Neptunus" },
+      { clue: "Planet dengan bulan terbesar bernama Ganymede", answer: "Jupiter" },
+      { clue: "Planet dengan kemiringan sumbu ekstrem", answer: "Uranus" },
+
+      // Nebula
+      { clue: "Nebula berbentuk seperti kupu-kupu", answer: "Butterfly Nebula" },
+      { clue: "Nebula merah muda terkenal di rasi Orion", answer: "Orion Nebula" },
+      { clue: "Nebula yang menyerupai mata manusia", answer: "Helix Nebula" },
+      { clue: "Nebula berbentuk cincin di rasi Lyra", answer: "Ring Nebula" },
+      { clue: "Nebula yang terlihat seperti kepala kuda", answer: "Horsehead Nebula" },
+      { clue: "Nebula menyerupai burung hantu", answer: "Owl Nebula" },
+      { clue: "Nebula yang terlihat seperti kepiting", answer: "Crab Nebula" },
+      { clue: "Nebula menyerupai mawar", answer: "Rosette Nebula" },
+      { clue: "Nebula menyerupai jam pasir", answer: "Hourglass Nebula" },
+      { clue: "Nebula menyerupai karpet ajaib", answer: "NGC 7027" }
+    ];
+
+    let currentQuestion;
+
+    function loadQuestion() {
+      const index = Math.floor(Math.random() * questions.length);
+      currentQuestion = questions[index];
+      document.getElementById("question").innerText = currentQuestion.clue;
+      document.getElementById("answer").value = "";
+      document.getElementById("result").innerText = "";
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+      const correctAnswer = currentQuestion.answer.toLowerCase();
+      const result = document.getElementById("result");
+
+      if (userAnswer === correctAnswer) {
+        result.innerText = "Benar!";
+        result.style.color = "green";
+        setTimeout(loadQuestion, 3000);
+      } else {
+        result.innerText = "Salah! Jawaban benar: " + currentQuestion.answer;
+        result.style.color = "red";
+        setTimeout(loadQuestion, 4000);
+      }
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</body>
+</html>
